@@ -3,4 +3,7 @@ bloom.bin
 file_0.jpg
 hash_msg.dht
 requirements.txt
+bplus.py
+input.txt
+rocksdb/
 tmpdir/
