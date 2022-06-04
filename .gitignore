@@ -1,6 +1,4 @@
 .DS_Store
-bloom.bin
-file_0.jpg
-hash_msg.dht
 requirements.txt
 tmpdir/
+.venv/
