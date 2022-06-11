@@ -28,6 +28,7 @@ CHAT_SUPERGROUP_STR = "-100"
 DEVELOPER_CHAT_ID = "-1001789876771"
 DEVELOPER_CHAT_USABLE = DEVELOPER_CHAT_ID[4:]
 TEMP_DIR = 'tmpdir/'
+SIMILARITY_COEF = 5
 
 current_dir = os.getcwd()
 TEMP_DIR_FULL_PATH = f"{current_dir}/{TEMP_DIR}"
@@ -214,7 +215,7 @@ def check_hamming_diff(cf, s_hash):
     similarities = []
     for k, v in cf.items():
         diff = imagehash.hex_to_hash(k) - imagehash.hex_to_hash(s_hash)
-        if diff <= 5 and diff > 0:
+        if diff <= SIMILARITY_COEF and diff > 0:
             similarities.append(str(v))
     return similarities
 
