@@ -202,14 +202,6 @@ def greet_chat_members(update: Update, context: CallbackContext) -> None:
             f"{member_name} is no longer with us. Thanks a lot, {cause_name} ...",
             parse_mode=ParseMode.HTML,
         )
-        
-def alpharemover(image):
-    if image.mode != 'RGBA':
-        return image
-    canvas = Image.new('RGBA', image.size, (255,255,255,255))
-    canvas.paste(image, mask=image)
-    return canvas.convert('RGB')
-
 
 def check_hamming_diff(cf, s_hash):
     similarities = []
@@ -230,9 +222,7 @@ def image_handler(update, context):
         img_file = f"{TEMP_DIR_FULL_PATH}{file}.{image_type}"
 
         # duplicates checking starts here
-        image = alpharemover(Image.open(img_file))
-        image = image.convert("L").resize((100, 100), Image.ANTIALIAS)
-        hash = imagehash.average_hash(image, hash_size=16)
+        hash = imagehash.average_hash(Image.open(img_file), hash_size=16)
         
         chat_id = str(update.message.chat.id)
 
