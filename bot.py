@@ -43,6 +43,7 @@ import mysql.connector
 
 # globals
 TOKEN = ""
+OPENWEATHER_APP_ID = ''
 DEVELOPER_CHAT_ID = "-1001789876771"
 TEMP_DIR = 'tmpdir/'
 SIMILARITY_COEF = 4
@@ -388,7 +389,7 @@ def _parse_wind_direction(openweather_dict: dict) -> str:
 async def show_weather(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     message = update.message.text.replace('/weather ','')
     
-    data = { 'appid':'8537d9ef6386cb97156fd47d832f479c', 'q':message, 'units':'metric'}
+    data = { 'appid':OPENWEATHER_APP_ID, 'q':message, 'units':'metric'}
     query = f"https://api.openweathermap.org/data/2.5/weather?{urllib.parse.urlencode(data)}"
 
     try:
