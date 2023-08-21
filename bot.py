@@ -12,7 +12,6 @@ from datetime import datetime
 from enum import IntEnum
 from PIL import Image
 import imagehash
-import secrets
 import mysql.connector.pooling
 
 
@@ -28,9 +27,9 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"{TG_VER} version of this example, "
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
-from telegram import Update, ChatMemberUpdated, KeyboardButton, ReplyKeyboardMarkup
+from telegram import Update, ChatMemberUpdated, ChatMember, Chat
 from telegram.constants import ParseMode
-from telegram.ext import Application, CommandHandler, ContextTypes, ChatMemberHandler, CallbackContext, Updater
+from telegram.ext import Application, CommandHandler, ContextTypes, ChatMemberHandler, CallbackContext
 from telegram.ext import MessageHandler
 from telegram.ext import filters
 
@@ -40,7 +39,7 @@ TOKEN = ""
 OPENWEATHER_APP_ID = ''
 DEVELOPER_CHAT_ID = "-1001789876771"
 TEMP_DIR = 'tmpdir/'
-SIMILARITY_COEF = 8
+SIMILARITY_COEF = 4
 
 DBCONFIG = {
     "host":"127.0.0.1",
@@ -347,7 +346,7 @@ class Imagebot():
 
     async def track_chats(self, update: Update, context: CallbackContext) -> None:
         """Tracks the chats the bot is in."""
-        result = extract_status_change(update.my_chat_member)
+        result = self.extract_status_change(update.my_chat_member)
         if result is None:
             return
         was_member, is_member = result
@@ -390,7 +389,6 @@ class Imagebot():
         # file_size=622, file_unique_id='AQADaNIxG7SweEp4')
         new_file.file_unique_id
         await new_file.download_to_drive(f"{TEMP_DIR_FULL_PATH}{new_file.file_unique_id}")
-        # await update.message.reply_text(f"waiting for the first awailable CIPSO agent to check {new_file.file_unique_id}")
 
         img = Image.open(f"{TEMP_DIR_FULL_PATH}{new_file.file_unique_id}")
         os.rename(f"{TEMP_DIR_FULL_PATH}{new_file.file_unique_id}", f"{TEMP_DIR_FULL_PATH}{new_file.file_unique_id}.{img.format}")
@@ -398,8 +396,7 @@ class Imagebot():
         img.close()
 
         # duplicates checking starts here
-        # img_hash = imagehash.average_hash(Image.open(img_file), hash_size=16)
-        img_hash = imagehash.colorhash(Image.open(img_file), binbits=9)
+        img_hash = imagehash.average_hash(Image.open(img_file), hash_size=11)
 
         chat_id = str(update.message.chat.id)
         s_hash = str(img_hash)
@@ -414,7 +411,7 @@ class Imagebot():
 
     async def greet_chat_members(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         """Greets new users in chats and announces when someone leaves"""
-        result = extract_status_change(update.chat_member)
+        result = self.extract_status_change(update.chat_member)
         if result is None:
             return
 
@@ -440,7 +437,7 @@ class Imagebot():
     ### start weather parser
     def get_coordinates(self) -> Coordinates:
         """Returns current coordinates using IP address"""
-        data = _get_ip_data()
+        data = self._get_ip_data()
         latitude = data['loc'].split(',')[0]
         longitude = data['loc'].split(',')[1]
 
