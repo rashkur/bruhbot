@@ -14,6 +14,11 @@ from PIL import Image
 import imagehash
 import mysql.connector.pooling
 
+import openai
+from IPython.display import display, Markdown
+import yfinance as yf
+
+
 
 from telegram import __version__ as TG_VER
 try:
@@ -35,6 +40,7 @@ from telegram.ext import filters
 
 
 # globals
+openai.api_key = ""
 TOKEN = ""
 OPENWEATHER_APP_ID = ''
 DEVELOPER_CHAT_ID = "-1001789876771"
@@ -46,9 +52,11 @@ DBCONFIG = {
     "port":"3306",
     "user":"root",
     "password":"",
-    "database":"imagebot",
+    "database":"test",
     "pool_name":"bot_pool"
 }
+
+
 # end globals
 
 current_dir = os.getcwd()
@@ -510,6 +518,19 @@ class Imagebot():
             f'Sunset: {wthr.sunset.strftime("%H:%M")}\n'
 
         await update.effective_chat.send_message(ret)
+        
+    async def chat_with_gpt(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        message = update.message.text.replace('/gpt ','')
+        
+        response = openai.ChatCompletion.create(
+              model="gpt-3.5-turbo",
+              messages=[{"role": "system", "content": 'You are a helpful assistant who understands a lot of topics and helping people to find aswers for them. You can crack a joke or add use missinformation to make message more funny. You should highlight when you are joking.'},
+                        {"role": "user", "content": f'{message}'}
+              ])
+        
+        bot_response = response["choices"][0]["message"]["content"]
+        
+        await update.effective_chat.send_message(bot_response)
 
     def main(self) -> None:
         """Run the bot."""
@@ -519,6 +540,7 @@ class Imagebot():
         application.add_handler(MessageHandler(filters.PHOTO, self.image_handler))
         application.add_handler(CommandHandler("show_chats", self.show_chats))
         application.add_handler(CommandHandler("weather", self.show_weather))
+        application.add_handler(CommandHandler("gpt", self.chat_with_gpt))
         application.add_error_handler(self.error_handler)
 
         application.run_polling(allowed_updates=Update.ALL_TYPES)
@@ -527,5 +549,3 @@ class Imagebot():
 if __name__ == "__main__":
     ib = Imagebot(MySQLPool(**DBCONFIG))
     ib.main()
-    
-    
