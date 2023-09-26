@@ -18,8 +18,6 @@ import openai
 from IPython.display import display, Markdown
 import yfinance as yf
 
-
-
 from telegram import __version__ as TG_VER
 try:
     from telegram import __version_info__
@@ -55,8 +53,6 @@ DBCONFIG = {
     "database":"test",
     "pool_name":"bot_pool"
 }
-
-
 # end globals
 
 current_dir = os.getcwd()
