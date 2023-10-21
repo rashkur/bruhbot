@@ -520,7 +520,7 @@ class Imagebot():
         
         response = openai.ChatCompletion.create(
               model="gpt-3.5-turbo",
-              messages=[{"role": "system", "content": 'You are a helpful assistant who understands a lot of topics and helping people to find answers. You can crack a joke or add use misinformation to make reply more funny.'},
+              messages=[{"role": "system", "content": 'You are a helpful assistant who understands a lot of topics and helping people to find answers. You can crack a joke or add misinformation to make reply more funny.'},
                         {"role": "user", "content": f'{message}'}
               ])
         
