@@ -4,6 +4,7 @@ import html
 import json
 import urllib 
 import logging
+import time
 import traceback
 import os
 from typing import Optional, Tuple, Literal, TypeAlias
@@ -528,6 +529,22 @@ class Imagebot():
         
         await update.effective_chat.send_message(bot_response)
 
+    async def cpi(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        SEPT_29_2024_19_30_UTC_INDIANS_COUNT = 1457309676
+        SEPT_29_2024_19_30_UTC_EPOCH = 1727631000
+        # 2024 numbers
+        INDIA_BIRTHRATE_PER_DAY = 80730
+        INDIA_DEATHRATE_PER_DAY = 29310
+        INDIA_NET_MIGRATION_PER_DAY = -1622
+        INDIANS_PER_SECOND = (INDIA_BIRTHRATE_PER_DAY - INDIA_DEATHRATE_PER_DAY + INDIA_NET_MIGRATION_PER_DAY) / 86400
+        current_epoch = int(time.time())
+
+        current_population_of_india = SEPT_29_2024_19_30_UTC_INDIANS_COUNT + (current_epoch - SEPT_29_2024_19_30_UTC_EPOCH) * INDIANS_PER_SECOND
+
+        response = f"Current population of India: {current_population_of_india:,.0f}"
+	
+        await update.effective_chat.send_message(bot_response)
+
     def main(self) -> None:
         """Run the bot."""
         application = Application.builder().token(TOKEN).build()
@@ -537,6 +554,7 @@ class Imagebot():
         application.add_handler(CommandHandler("show_chats", self.show_chats))
         application.add_handler(CommandHandler("weather", self.show_weather))
         application.add_handler(CommandHandler("gpt", self.chat_with_gpt))
+        application.add_handler(CommandHandler("cpi", self.chat_with_gpt))
         application.add_error_handler(self.error_handler)
 
         application.run_polling(allowed_updates=Update.ALL_TYPES)
